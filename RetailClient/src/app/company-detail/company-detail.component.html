@@ -1,0 +1,59 @@
+<!-- <h3>You selected company with id = {{companyId}}</h3> -->
+
+<h1>
+    Purchase Order List
+</h1>
+<!--   <ul class="items">
+      <li><span class="badge">Index</span><span>Date</span><span>Amount</span></li>
+    <li *ngFor="let purchase of purchases; index as i">
+      <span class="badge">{{i + 1}}</span><span>{{purchase.date}}</span><span>{{purchase.amount}}</span>
+    </li> 
+</ul>-->
+
+
+<div *ngIf="company != null">
+    <h1 style="text-align: center;">{{company.name}}</h1>
+</div>
+<br>
+
+<table class="table table-striped">
+    <thead>
+        <th scope="col">#</th>
+        <th scope="col">Date (yyyy-mm-dd)</th>
+        <th scope="col">Bill No</th>
+        <th scope="col">Total Amount</th>
+        <!--    <th scope="col">Eway Bill No</th>
+    <th scope="col">Description</th>
+    <th scope="col">Code Of Item</th>
+    <th scope="col">Quantity</th>
+    <th scope="col">Rate Net</th>
+    <th scope="col">GST Tax</th> -->
+        <th scope="col">Action</th>
+    </thead>
+    <tbody>
+        <tr scope="row" *ngFor="let purchase of purchases; index as i">
+            <td scope="col">{{i + 1}}</td>
+            <td scope="col">{{purchase.dateOfPurchase | date : 'yyyy-MM-dd'}}</td>
+            <td scope="col">{{purchase.billNo}}</td>
+            <td scope="col">{{purchase.totalAmount}}</td>
+            <!--    <td scope="col">{{purchase.ewayBillNo}}</td>
+    <td scope="col">{{purchase.description}}</td>
+    <td scope="col">{{purchase.codeOfItem}}</td>
+    <td scope="col">{{purchase.quantity}}</td>
+    <td scope="col">{{purchase.rateNet}}</td>
+    <td scope="col">{{purchase.gstTax}}</td> -->
+            <td scope="col">
+                <a href="/purchases/edit/{{purchase.id}}" class="btn btn-primary a-btn-slide-text">
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    <span><strong>Edit</strong></span>
+                </a>
+                &nbsp; &nbsp;
+                <a href="#" class="btn btn-primary a-btn-slide-text" (click)="onDelete($event, purchase)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    <span><strong>Delete</strong></span>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+
+</table>

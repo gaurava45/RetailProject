@@ -1,0 +1,300 @@
+<div class="container-fluid">
+
+    <!--   purchaseModelSubmitted:
+      {{purchaseModelSubmitted | json}}
+      <hr />
+      purchaseModel:
+      {{purchaseModel | json}} -->
+
+    <div *ngIf="purchaseCreated;">
+        <h2 class="text-success">Purchase Order updated</h2>
+    </div>
+
+    <div *ngIf="purchaseCreatedError;">
+        <h2 class="text-danger">Error updating Purchase Order</h2>
+        <div *ngIf="dateError;">
+            <small class="text-danger">Date of purchase must be a valid date (Ex: yyyy-mm-dd).</small>
+        </div>
+    </div>
+
+
+    <h1>Purchase Details</h1>
+    <form #userForm="ngForm" novalidate (ngSubmit)="onSubmit(userForm)">
+
+
+        <!--     UserForm:
+    {{userForm.value | json}}
+    <hr />
+    purchaseModel:
+    {{purchaseModel | json}} -->
+
+        <div class="form-group">
+            <label>Company **</label>
+            <select #company="ngModel" (blur)="validateCompany()" class="custom-select" [class.is-invalid]="companyHasError && company.touched" name="company" [(ngModel)]="purchaseModel.company" [compareWith]="compareFn">
+        <!-- <option value = "">Select Company **</option> -->
+        <option *ngFor="let c of companies" [ngValue]="c">{{c.name}}</option>
+      </select>
+            <small class="text-danger" [class.d-none]="!companyHasError || company.untouched">Please choose a company</small>
+        </div>
+
+        <div class="form-group">
+            <label>Date of purchase **</label>
+            <div class="input-group">
+                <input class="form-control" required placeholder="yyyy-mm-dd" #dp="ngModel" name="dp" [(ngModel)]="purchaseModel.ngbDate" ngbDatepicker #d="ngbDatepicker">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                </div>
+            </div>
+            <div *ngIf="dp.touched && dp.invalid">
+                <small class="text-danger" *ngIf="dp.errors.required">
+          Date of purchase is required
+        </small>
+                <small class="text-danger" *ngIf="dp.errors.ngbDate">
+          Date of purchase must be a valid date (Ex: yyyy-mm-dd).
+        </small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Bill No / Invoice No **</label>
+            <input type="text" required #billNo="ngModel" [class.is-invalid]="billNo.invalid && billNo.touched" class="form-control" name="billNo" [(ngModel)]="purchaseModel.billNo">
+            <small class="text-danger" [class.d-none]="billNo.valid || billNo.untouched">Bill No is required</small>
+        </div>
+
+        <div class="form-group">
+            <label>Total Amount **</label>
+            <input type="text" required #totalAmount="ngModel" [class.is-invalid]="totalAmount.invalid && totalAmount.touched" class="form-control" name="totalAmount" [(ngModel)]="purchaseModel.totalAmount">
+            <small class="text-danger" [class.d-none]="totalAmount.valid || totalAmount.untouched">Total Amount is required</small>
+        </div>
+
+        <h2>
+            Items
+        </h2>
+
+        <!--         <ng-template ngFor let-item [ngForOf]="purchaseModel.items" let-index="index" let-isLast="last">
+
+        <div> -->
+
+        <table class="table table-striped">
+
+            <tr scope="row">
+                <td scope="col">Description</td>
+
+                <td scope="col">Code Of Item</td>
+
+                <td scope="col">Quantity</td>
+
+                <td scope="col">Rate Net</td>
+
+                <td scope="col">Amount</td>
+
+                <td scope="col">GstTax</td>
+
+                <td scope="col"></td>
+            </tr>
+
+            <tr scope="row" *ngFor="let item of purchaseModel.items; index as index">
+
+                <!--
+      NOTE: We are using the "nameControl" template variable to define our CSS
+      class. Each template variable is scoped to the template in which it was
+      defined; which means, each "nameControl" instance is scoped to the ngFor
+      loop-iteration of the given Pet model.
+    -->
+
+
+                <!--
+        Each form control has to have a unique "name" property so that it can be
+        registered with the parent NgForm instance (unless it is denoted as
+        "standalone"). As such, we are using attribute interpolation to give each
+        input a locally-unique name based on the model data (XXX_{{ pet.id }}).
+      -->
+                <!--         <select name="type_{{ pet.id }}" [(ngModel)]="pet.type">
+        <option value="Dog">Dog</option>
+        <option value="Cat">Cat</option>
+      </select> -->
+
+                <!--
+        NOTE: We are defining a "nameControl" template variable that will give us
+        access to the "NgModel" instance for this form input. We are then using
+        this reference to adjust the CSS class-list on the parent container.
+      -->
+                <td scope="col">
+                    <input #descriptionControl="ngModel" type="text" name="description_{{ index }}" [(ngModel)]="item.description" placeholder="Description..." />
+                </td>
+                <td scope="col">
+                    <input #codeOfItemControl="ngModel" type="text" name="codeOfItem{{ index }}" [(ngModel)]="item.codeOfItem" placeholder="Code of item..." />
+                </td>
+                <td scope="col">
+                    <input #quantityControl="ngModel" type="text" name="quantity{{ index }}" [(ngModel)]="item.quantity" placeholder="Quantity..." />
+                </td>
+                <td scope="col">
+                    <input #rateNetControl="ngModel" type="text" name="rateNet{{ index }}" [(ngModel)]="item.rateNet" placeholder="Rate Net..." />
+                </td>
+                <td scope="col">
+                    <input #amountControl="ngModel" type="text" name="amount{{ index }}" [(ngModel)]="item.amount" placeholder="Amount..." />
+                </td>
+                <td scope="col">
+                    <input #gstTaxControl="ngModel" type="text" name="gstTax{{ index }}" [(ngModel)]="item.gstTax" placeholder="GST Tax..." />
+
+                    <!--         <input
+        type="text"
+        name="age_{{ pet.id }}"
+        [(ngModel)]="pet.age"
+        size="10"
+        placeholder="Age..."
+      /> -->
+
+                    <!--     <label for="isPastOn_{{ pet.id }}">
+        <input
+          type="checkbox"
+          id="isPastOn_{{ pet.id }}"
+          name="isPastOn_{{ pet.id }}"
+          [(ngModel)]="pet.isPastOn"
+          (keydown.tab)="( ( isLast && addPet() ) || true )"
+        />
+        Is pasted-on?
+      </label> -->
+                </td>
+                <td scope="col">
+                    <a (click)="removeItem( index )" title="Remove Item" class="remove">
+        &times;
+      </a>
+                </td>
+            </tr>
+        </table>
+        <!--              </div>
+
+      </ng-template> -->
+
+        <p class="actions">
+            <a (click)="addItem()">Add Another Item</a>
+        </p>
+
+        <!--  <div class="form-group">
+      <label>Eway Bill No</label>
+      <input type="text" class="form-control" name="ewayBillNo" [(ngModel)]="purchaseModel.ewayBillNo">
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" class="form-control" name="description" [(ngModel)]="purchaseModel.description">
+    </div>
+
+    <div class="form-group">
+      <label>Code Of Item</label>
+      <input type="text" class="form-control" name="codeOfItem" [(ngModel)]="purchaseModel.codeOfItem">
+    </div>
+
+    <div class="form-group">
+      <label>Quantity</label>
+      <input type="text" class="form-control" name="quantity" [(ngModel)]="purchaseModel.quantity">
+    </div>
+
+    <div class="form-group">
+      <label>Rate Net</label>
+      <input type="text" class="form-control" name="rateNet" [(ngModel)]="purchaseModel.rateNet">
+    </div>
+
+    <div class="form-group">
+      <label>GstTax</label>
+      <input type="text" class="form-control" name="gstTax" [(ngModel)]="purchaseModel.gstTax">
+    </div> -->
+
+
+        <!--       <div class="form-group">
+            <label>Name</label>
+            <input type="text" required #name="ngModel" 
+            [class.is-invalid]="name.invalid && name.touched" class="form-control" name="userName" [(ngModel)]="purchaseModel.name">
+            <small class="text-danger" [class.d-none]="name.valid || name.untouched">Name is required</small>
+          </div>
+      
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="purchaseModel.email">
+          </div>
+      
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" class="form-control" name="phone" [(ngModel)]="purchaseModel.phone">
+          </div>
+      
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" class="form-control" name="address" [(ngModel)]="purchaseModel.address">
+          </div>
+      
+          <div class="form-group">
+            <label>GSTN Number</label>
+            <input type="text" class="form-control" name="gstn" [(ngModel)]="purchaseModel.gstn">
+          </div>
+      
+          <div class="form-group">
+            <label>Bank Name</label>
+            <input type="text" class="form-control" name="bankName" [(ngModel)]="purchaseModel.bankName">
+          </div>
+      
+          <div class="form-group">
+            <label>Bank A/C Number</label>
+            <input type="text" class="form-control" name="bankAccNo" [(ngModel)]="purchaseModel.bankAccNo">
+          </div>
+      
+          <div class="form-group">
+            <label>Bank IFSC</label>
+            <input type="text" class="form-control" name="bankIFSC" [(ngModel)]="purchaseModel.bankIFSC">
+          </div> -->
+
+        <!--
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" #phone="ngModel" pattern = "^\d{10}$" required 
+            [class.is-invalid]="phone.invalid && phone.touched"
+            class="form-control" name="phone" [(ngModel)]="purchaseModel.phone">
+            <div *ngIf="phone.errors && phone.touched">
+              <small class="text-danger" *ngIf="phone.errors.required">Phone number is required</small>
+              <small class="text-danger" *ngIf="phone.errors.pattern">Phone number must be 10 digits</small>
+            </div>
+          </div>
+      
+      
+      
+          <div class="form-group">
+            <select #company="ngModel" (blur)="validatecompany(company.value)" (change)="validatecompany(company.value)" class="custom-select" 
+            [class.is-invalid]="companyHasError && company.touched" name="company" [(ngModel)]="purchaseModel.company">
+              <option value=""> I am interested in</option>
+              <option *ngFor="let company of companys">{{company}}</option>
+            </select>
+            <small class="text-danger" [class.d-none]="!companyHasError || company.untouched">Please choose a company</small>
+          </div>
+      
+          <div class="mb-3">
+          <label>Time Preference</label>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="timePreference" value="morning" [(ngModel)]="purchaseModel.timePreference">
+            <label class="form-check-label">Morning (9AM - 12PM)</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="timePreference" value="evening" [(ngModel)]="purchaseModel.timePreference">
+            <label class="form-check-label">Evening (5PM - 8PM)</label>
+          </div>
+        </div>
+      
+        <div class="form-check mb-3">
+          <input type="checkbox" class="form-check-input" name="subscribe" [(ngModel)]="purchaseModel.subscribe">
+          <label class="form-check-label">
+            Send me promotional offers
+          </label>
+        </div> -->
+
+        <button [disabled]="userForm.form.invalid || companyHasError" class="btn btn-primary" type="submit">Update</button>
+
+    </form>
+
+    <!-- <pre>Model: {{ model | json }}</pre>
+    
+    <ngb-alert class="mt-3 mb-0" type="info" [dismissible]="false">
+      You must provide the icon for the button. This allows you
+      to choose an icon that matches your application's style.
+      In this example, the icon is set via a CSS class.
+    </ngb-alert> -->
+</div>
